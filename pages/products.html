@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - POS System</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#667eea">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Menú Lateral -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>TOTALBIZ</h2>
+                <p>Sistema de Gestión de Ventas</p>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="dashboard.html" class="menu-item">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="products.html" class="menu-item active">
+                    <span>📦</span>
+                    <span>Productos</span>
+                </a>
+                <a href="sellers.html" class="menu-item">
+                    <span>👥</span>
+                    <span>Gestores</span>
+                </a>
+                <a href="sales.html" class="menu-item">
+                    <span>💰</span>
+                    <span>Ventas</span>
+                </a>
+                <a href="reports.html" class="menu-item">
+                    <span>📊</span>
+                    <span>Reportes</span>
+                </a>
+                <a href="exchange.html" class="menu-item">
+                    <span>💱</span>
+                    <span>Tipo de Cambio</span>
+                </a>
+                <a href="payment-methods.html" class="menu-item">
+                    <span>💳</span>
+                    <span>Métodos de Pago</span>
+                </a>
+                <a href="guide.html" class="menu-item">
+                    <span>❓</span>
+                    <span>Guía de Uso</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Botón para ocultar/mostrar sidebar -->
+        <button class="sidebar-toggle" id="sidebarToggleBtn" title="Ocultar/Mostrar menú">◀</button>
+        
+        <!-- Botón de regreso -->
+        <button class="back-button" id="backButton" title="Volver atrás">↩️</button>
+
+        <!-- Contenido Principal -->
+        <main class="main-content" id="mainContent">
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <button class="menu-toggle-btn" id="menuToggleBtn">☰ Menú</button>
+                    <div class="logo-area">
+                        <h1>📦 Gestión de Productos</h1>
+                        <p>Administrar inventario de productos</p>
+                    </div>
+                </div>
+                 <div class="header-actions">
+                <button onclick="logout()" class="logout-btn">🔓 Cerrar Sesión</button>
+            </header>
+            
+            <div class="content-area">
+                <div class="products-container">
+                    <div class="products-header">
+                        <h1>Inventario de Productos</h1>
+                        <button class="btn-primary" onclick="showProductModal()">+ Nuevo Producto</button>
+                    </div>
+                    
+                    <div id="productsGrid" class="products-grid">
+                        <div class="product-card">
+                            <div class="product-info" style="text-align: center; padding: 40px;">
+                                <p>Cargando productos...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para añadir/editar producto -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nuevo Producto</h2>
+                <span class="close-modal" onclick="closeProductModal()">&times;</span>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="form-group">
+                    <label for="productName">Nombre del Producto *</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Descripción</label>
+                    <textarea id="productDescription" placeholder="Descripción del producto"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Precio Base (USD) *</label>
+                    <input type="number" id="productPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="productStock">Cantidad en Almacén *</label>
+                    <input type="number" id="productStock" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="productImage">Imagen del Producto</label>
+                    <input type="file" id="productImage" accept="image/*">
+                    <small>Formatos: JPG, PNG, GIF. Máx 2MB</small>
+                    <div id="currentImage" style="margin-top: 10px; display: none;">
+                        <img id="currentImagePreview" style="max-width: 100px; max-height: 100px;">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Guardar Producto</button>
+                    <button type="button" onclick="closeProductModal()" class="btn-danger">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Elementos sidebar
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+        const menuToggleBtn = document.getElementById('menuToggleBtn');
+        const backButton = document.getElementById('backButton');
+        
+        let sidebarCollapsed = false;
+        
+        const savedState = localStorage.getItem('sidebarCollapsed');
+        if (savedState === 'true' && sidebar && mainContent) {
+            sidebar.classList.add('collapsed');
+            mainContent.classList.add('expanded');
+            sidebarCollapsed = true;
+            if (sidebarToggleBtn) sidebarToggleBtn.innerHTML = '▶';
+        }
+        
+        function toggleSidebar() {
+            if (sidebar && mainContent) {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+                sidebarCollapsed = sidebar.classList.contains('collapsed');
+                localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+                if (sidebarToggleBtn) sidebarToggleBtn.innerHTML = sidebarCollapsed ? '▶' : '◀';
+            }
+        }
+        
+        function goBack() { window.history.back(); }
+        function toggleMobileMenu() { if (sidebar) sidebar.classList.toggle('mobile-open'); }
+        
+        function setupMobileMenuClose() {
+            if (!sidebar || !menuToggleBtn) return;
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    if (!sidebar.contains(e.target) && !menuToggleBtn.contains(e.target)) {
+                        sidebar.classList.remove('mobile-open');
+                    }
+                }
+            });
+        }
+        
+        function highlightActiveMenu() {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.menu-item').forEach(item => {
+                const href = item.getAttribute('href');
+                if (href === currentPage) item.classList.add('active');
+                else item.classList.remove('active');
+            });
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('authenticated');
+            sessionStorage.removeItem('loginTime');
+            window.location.href = '../index.html';
+        }
+        
+        if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleSidebar);
+        if (backButton) backButton.addEventListener('click', goBack);
+        if (menuToggleBtn) menuToggleBtn.addEventListener('click', toggleMobileMenu);
+        
+        highlightActiveMenu();
+        setupMobileMenuClose();
+    </script>
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/products.js"></script>
+    <script src="../js/dark-mode.js"></script>
+    <script src="js/support.js"></script>
+    <script src="js/icons.js"></script>
+    <script>
+        if (!checkAuth()) {}
+    </script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('../sw.js')
+      .then(reg => console.log('✅ Service Worker registrado'))
+      .catch(err => console.error('❌ Error SW:', err));
+  }
+</script>
+</body>
+</html>
