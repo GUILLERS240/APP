@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Cabeceras anti-caché para evitar tener que hacer Ctrl+F5 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>TotalBiz - Sistema de Gestión de Ventas</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Contenedor principal con fondo local (PNG) */
+        .login-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-image: url('images/bg/fondo.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        /* Overlay suave para mejorar contraste del formulario */
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        /* Fallback si no existe la imagen de fondo */
+        .login-container.no-image {
+            background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Caja del formulario - modo oscuro */
+        .login-box {
+            position: relative;
+            z-index: 2;
+            background: #1e1e2f;
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 45px 40px;
+            width: 100%;
+            max-width: 460px;
+            margin-right: 80px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.4);
+            animation: fadeInRight 0.6s ease;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Logo imagen local (PNG) */
+        .login-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-logo img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            display: inline-block;
+        }
+
+        /* Títulos modo oscuro */
+        .logo-area-login {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .logo-area-login h1 {
+            color: #ffffff;
+            font-size: 34px;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        .tagline {
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        /* Campos de formulario (oscuro) */
+        .input-group {
+            margin-bottom: 25px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #2a2a3a;
+            border: 1px solid #3a3a4a;
+            border-radius: 14px;
+            font-size: 16px;
+            color: #ffffff;
+            transition: all 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.3);
+            background: #2f2f42;
+        }
+        .input-group input::placeholder {
+            color: #aaa;
+        }
+
+        /* Botón de acceso */
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.4);
+        }
+
+        /* Mensaje de error */
+        .error-message {
+            margin-top: 15px;
+            padding: 12px;
+            background: #3a1a1a;
+            color: #ff8888;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+            font-size: 14px;
+            border: 1px solid #ff5555;
+        }
+        .error-message.show {
+            display: block;
+            animation: shake 0.3s ease;
+        }
+
+        /* Footer con derechos de autor actualizados */
+        .copyright-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 12px;
+            background: rgba(0,0,0,0.7);
+            color: #dddddd;
+            font-size: 12px;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+        }
+        .copyright-footer p {
+            margin: 0;
+        }
+        .copyright-footer .developer {
+            color: #ffd966;
+            font-weight: bold;
+        }
+
+        /* Botón de instalación manual (PWA) */
+        .install-pwa-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        .install-pwa-btn:hover {
+            background: #5a67d8;
+            transform: scale(1.02);
+        }
+
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-container {
+                justify-content: center;
+            }
+            .login-box {
+                margin-right: 0;
+                margin: 20px;
+                max-width: 90%;
+                padding: 30px 25px;
+            }
+            .copyright-footer {
+                font-size: 10px;
+                padding: 8px;
+            }
+            .install-pwa-btn {
+                bottom: 70px;
+                left: 20px;
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <div class="login-logo">
+                <img src="images/icons/logo.png" alt="TotalBiz Logo" onerror="this.style.display='none'">
+            </div>
+            <div class="logo-area-login">
+                <h1>TotalBiz</h1>
+                <p class="tagline">Sistema de Gestión de Ventas</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="masterKey">🔐 Clave Maestra</label>
+                    <input type="password" id="masterKey" placeholder="Ingrese la clave maestra" required autofocus>
+                </div>
+                <div class="input-group">
+                    <label for="accessKey">🔑 Clave de Acceso</label>
+                    <input type="text" id="accessKey" placeholder="Ingrese la clave de acceso" required>
+                </div>
+                <button type="submit" class="login-btn">Acceder al Sistema</button>
+                <div id="errorMessage" class="error-message"></div>
+            </form>
+        </div>
+
+        <div class="copyright-footer">
+            <p>CREADO POR <span class="developer">GUILLERMO RAMOS SANTOS</span>, 2026 - TODOS LOS DERECHOS RESERVADOS</p>
+        </div>
+    </div>
+
+    <button id="installPwaBtn" class="install-pwa-btn">📲 Instalar aplicación</button>
+
+    <script>
+        // Función de login (se define antes de cargar los scripts externos para evitar errores)
+        async function checkLogin(event) {
+            event.preventDefault();
+            const MASTER_KEY = 'ADMIN';
+            const masterKeyInput = document.getElementById('masterKey');
+            const accessKeyInput = document.getElementById('accessKey');
+            const errorDiv = document.getElementById('errorMessage');
+
+            if (masterKeyInput.value !== MASTER_KEY) {
+                errorDiv.textContent = '❌ Clave maestra incorrecta.';
+                errorDiv.classList.add('show');
+                masterKeyInput.value = '';
+                masterKeyInput.focus();
+                setTimeout(() => errorDiv.classList.remove('show'), 3000);
+                return;
+            }
+
+            const accessKey = accessKeyInput.value.trim();
+            if (!accessKey) {
+                errorDiv.textContent = '❌ Debe ingresar una clave de acceso.';
+                errorDiv.classList.add('show');
+                setTimeout(() => errorDiv.classList.remove('show'), 3000);
+                return;
+            }
+
+            if (typeof validateAccessKey === 'undefined' || typeof registerSession === 'undefined') {
+                errorDiv.textContent = '❌ Error interno: funciones de seguridad no cargadas.';
+                errorDiv.classList.add('show');
+                console.error('validateAccessKey o registerSession no definidas');
+                return;
+            }
+
+            const { valid, reason, keyEntry } = await validateAccessKey(accessKey);
+            if (!valid) {
+                errorDiv.textContent = `❌ Clave de acceso inválida: ${reason}`;
+                errorDiv.classList.add('show');
+                setTimeout(() => errorDiv.classList.remove('show'), 3000);
+                return;
+            }
+
+            await registerSession(accessKey, keyEntry);
+            sessionStorage.setItem('authenticated', 'true');
+            sessionStorage.setItem('loginTime', new Date().toISOString());
+            window.location.href = 'pages/dashboard.html';
+        }
+
+        function loadBackground() {
+            const container = document.getElementById('loginContainer');
+            const img = new Image();
+            img.onload = () => {
+                container.style.backgroundImage = "url('images/bg/fondo.png')";
+                container.classList.remove('no-image');
+            };
+            img.onerror = () => {
+                container.classList.add('no-image');
+                console.warn("No se encontró la imagen de fondo local (images/bg/fondo.png). Usando gradiente.");
+            };
+            img.src = 'images/bg/fondo.png';
+        }
+
+        // Instalación PWA
+        let deferredPrompt;
+        const installBtn = document.getElementById('installPwaBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (installBtn) installBtn.style.display = 'flex';
+        });
+
+        if (installBtn) {
+            installBtn.addEventListener('click', () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('✅ Usuario aceptó la instalación');
+                        } else {
+                            console.log('❌ Usuario rechazó la instalación');
+                        }
+                        deferredPrompt = null;
+                        if (installBtn) installBtn.style.display = 'none';
+                    });
+                }
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ Aplicación instalada correctamente');
+            if (installBtn) installBtn.style.display = 'none';
+        });
+
+        // Inicialización
+        document.getElementById('loginForm').addEventListener('submit', checkLogin);
+        loadBackground();
+
+        if (typeof initDatabase === 'function') {
+            initDatabase().catch(err => console.error("Error BD:", err));
+        }
+    </script>
+
+    <!-- Carga de scripts externos (database.js, auth.js, etc.) -->
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/support.js"></script>
+    <script src="js/icons.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('✅ Service Worker registrado:', reg))
+                .catch(err => console.error('❌ Error al registrar SW:', err));
+        }
+    </script>
+</body>
+</html>
