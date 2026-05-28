@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Claves - TotalBiz</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/dark-mode.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>💰 TotalBiz</h2>
+                <p>Panel de Administración</p>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="dashboard.html" class="menu-item">📊 Dashboard</a>
+                <a href="products.html" class="menu-item">📦 Productos</a>
+                <a href="sellers.html" class="menu-item">👥 Gestores</a>
+                <a href="sales.html" class="menu-item">💰 Ventas</a>
+                <a href="reports.html" class="menu-item">📊 Reportes</a>
+                <a href="exchange.html" class="menu-item">💱 Tipo de Cambio</a>
+                <a href="payment-methods.html" class="menu-item">💳 Métodos de Pago</a>
+                <a href="guide.html" class="menu-item">❓ Guía de Uso</a>
+                <a href="admin-keys.html" class="menu-item active">🔑 Admin Claves</a>
+            </nav>
+        </aside>
+
+        <!-- Botones flotantes -->
+        <button class="sidebar-toggle" id="sidebarToggleBtn">◀</button>
+        <button class="back-button" id="backButton">↩️</button>
+
+        <!-- Contenido principal -->
+        <main class="main-content" id="mainContent">
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <button class="menu-toggle-btn" id="menuToggleBtn">☰ Menú</button>
+                    <div class="logo-area">
+                        <h1>🔑 Administración de Claves de Acceso</h1>
+                        <p>Generar y gestionar claves</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button onclick="toggleDarkMode()" class="dark-mode-toggle">🌙 Modo Oscuro</button>
+                    <button onclick="logout()" class="logout-btn">🔓 Cerrar Sesión</button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <!-- Panel de autenticación (usuario y contraseña) -->
+                <div id="authPanel" class="card" style="max-width: 400px; margin: 50px auto; text-align: center;">
+                    <h2>🔒 Acceso restringido</h2>
+                    <p>Ingrese sus credenciales de administrador</p>
+                    <input type="text" id="adminUserInput" placeholder="Usuario" class="form-control" style="width:100%; margin:10px 0; padding: 12px;">
+                    <input type="password" id="adminPassInput" placeholder="Contraseña" class="form-control" style="width:100%; margin:10px 0; padding: 12px;">
+                    <button id="authAdminBtn" class="btn-primary">Acceder</button>
+                    <div id="authError" class="error-message" style="margin-top:15px;"></div>
+                </div>
+
+                <!-- Panel de administración (oculto) -->
+                <div id="adminPanel" style="display: none;">
+                    <!-- Sección para generar claves -->
+                    <div class="card" style="margin-bottom: 30px;">
+                        <h3>➕ Generar nueva clave</h3>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+                            <div style="flex: 2;">
+                                <label for="durationSelect">Duración</label>
+                                <select id="durationSelect" class="form-control" style="width:100%">
+                                    <option value="7">7 días</option>
+                                    <option value="30">1 mes (30 días)</option>
+                                    <option value="90">3 meses (90 días)</option>
+                                    <option value="180">6 meses (180 días)</option>
+                                    <option value="365">1 año (365 días)</option>
+                                    <option value="0">Ilimitado</option>
+                                </select>
+                            </div>
+                            <div>
+                                <button id="generateKeyBtn" class="btn-primary">➕ Generar clave</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección para cambiar credenciales de administrador -->
+                    <div class="card" style="margin-bottom: 30px;">
+                        <h3>🔐 Cambiar credenciales de administrador</h3>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                <div style="flex: 1;">
+                                    <label>Usuario actual</label>
+                                    <input type="text" id="currentUser" class="form-control" placeholder="Usuario actual" autocomplete="off">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label>Contraseña actual</label>
+                                    <input type="password" id="currentPass" class="form-control" placeholder="Contraseña actual">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                <div style="flex: 1;">
+                                    <label>Nuevo usuario</label>
+                                    <input type="text" id="newUser" class="form-control" placeholder="Nuevo usuario (min 3 caracteres)" autocomplete="off">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label>Nueva contraseña</label>
+                                    <input type="password" id="newPass" class="form-control" placeholder="Nueva contraseña (min 4 caracteres)">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                                <button id="changeCredsBtn" class="btn-primary">Cambiar credenciales</button>
+                            </div>
+                            <div id="changeCredsMessage" class="error-message" style="display:none; margin-top:10px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de claves generadas -->
+                    <div class="card">
+                        <h3>📋 Claves generadas</h3>
+                        <div id="keysList" class="keys-list">
+                            <div class="empty-state">Cargando...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .keys-list { display: flex; flex-direction: column; gap: 12px; }
+        .key-card { background: var(--bg-secondary, #ffffff); border: 1px solid var(--border-color, #e0e0e0); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; transition: all 0.2s; }
+        .key-card:hover { background: var(--bg-hover, #f8f9fa); }
+        .key-code { font-family: monospace; font-size: 16px; font-weight: bold; background: var(--input-bg, #f1f1f1); padding: 5px 12px; border-radius: 20px; display: inline-block; letter-spacing: 0.5px; }
+        .key-info { font-size: 13px; color: var(--text-secondary, #666); margin-top: 6px; }
+        .btn-small { padding: 6px 14px; font-size: 12px; width: auto; }
+        .empty-state { text-align: center; padding: 40px; color: var(--text-secondary, #888); }
+        .form-control { background: var(--input-bg, #ffffff); border: 1px solid var(--border-color, #ddd); border-radius: 8px; padding: 10px; color: var(--text-primary, #333); }
+        .dark-mode .key-card { background: var(--dm-surface, #1e293b); border-color: var(--dm-border, #334155); }
+        .dark-mode .key-code { background: var(--dm-input, #0f172a); color: var(--dm-text, #f1f5f9); }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+
+    <script>
+        // Sidebar (idéntico al que tenías)
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+        const menuToggleBtn = document.getElementById('menuToggleBtn');
+        const backButton = document.getElementById('backButton');
+
+        let sidebarCollapsed = false;
+        const savedState = localStorage.getItem('sidebarCollapsed');
+        if (savedState === 'true' && sidebar && mainContent) {
+            sidebar.classList.add('collapsed');
+            mainContent.classList.add('expanded');
+            sidebarCollapsed = true;
+            if (sidebarToggleBtn) sidebarToggleBtn.innerHTML = '▶';
+        }
+        function toggleSidebar() {
+            if (sidebar && mainContent) {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+                sidebarCollapsed = sidebar.classList.contains('collapsed');
+                localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+                if (sidebarToggleBtn) sidebarToggleBtn.innerHTML = sidebarCollapsed ? '▶' : '◀';
+            }
+        }
+        function goBack() { window.history.back(); }
+        function toggleMobileMenu() { if (sidebar) sidebar.classList.toggle('mobile-open'); }
+        function setupMobileMenuClose() {
+            if (!sidebar || !menuToggleBtn) return;
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    if (!sidebar.contains(e.target) && !menuToggleBtn.contains(e.target)) {
+                        sidebar.classList.remove('mobile-open');
+                    }
+                }
+            });
+        }
+        function highlightActiveMenu() {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.menu-item').forEach(item => {
+                const href = item.getAttribute('href');
+                if (href === currentPage) item.classList.add('active');
+                else item.classList.remove('active');
+            });
+        }
+        function logout() {
+            sessionStorage.removeItem('authenticated');
+            window.location.href = '../index.html';
+        }
+        if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleSidebar);
+        if (backButton) backButton.addEventListener('click', goBack);
+        if (menuToggleBtn) menuToggleBtn.addEventListener('click', toggleMobileMenu);
+        highlightActiveMenu();
+        setupMobileMenuClose();
+    </script>
+
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/dark-mode.js"></script>
+    <script src="../js/admin-keys.js"></script>
+    <script>
+        if (!checkAuth()) { /* redirige automáticamente */ }
+    </script>
+</body>
+</html>
