@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Productos - TotalBiz 2.0</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#0f0f1a">
+</head>
+<body>
+    <nav class="top-navbar">
+        <div class="nav-brand">
+            <img src="../images/icons/logo.png" alt="Logo" onerror="this.style.display='none'">
+            <h1>TotalBiz 2.0</h1>
+        </div>
+        <div class="nav-menu" id="topNavMenu"></div>
+        <div class="nav-actions">
+            <button id="logoutTopBtn" class="logout-btn-nav">🔓 Cerrar Sesión</button>
+        </div>
+    </nav>
+
+    <nav class="bottom-navbar" id="bottomNavMenu"></nav>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="logo-area">
+                    <h1>📦 Gestión de Productos</h1>
+                    <p>Administrar inventario de productos</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-primary" onclick="showProductModal()">+ Nuevo Producto</button>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div id="productsGrid" class="products-grid">
+                <div class="product-card"><div class="product-info" style="text-align: center; padding: 40px;"><p>Cargando productos...</p></div></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nuevo Producto</h2>
+                <span class="close-modal" onclick="closeProductModal()">&times;</span>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="form-group"><label>Nombre del Producto *</label><input type="text" id="productName" required></div>
+                <div class="form-group"><label>Descripción</label><textarea id="productDescription" placeholder="Descripción del producto"></textarea></div>
+                <div class="form-group"><label>Precio Base (USD) *</label><input type="number" id="productPrice" step="0.01" required></div>
+                <div class="form-group"><label>Cantidad en Almacén *</label><input type="number" id="productStock" value="0" required></div>
+                <div class="form-group"><label>Imagen del Producto</label><input type="file" id="productImage" accept="image/*"><small>Formatos: JPG, PNG, GIF. Máx 2MB</small>
+                    <div id="currentImage" style="margin-top: 10px; display: none;"><img id="currentImagePreview" style="max-width: 100px; max-height: 100px;"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Guardar Producto</button>
+                    <button type="button" onclick="closeProductModal()" class="btn-danger">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/products.js"></script>
+    <script src="../js/backup.js"></script>
+    <script src="../js/icons.js"></script>
+    <script src="../js/support.js"></script>
+    <script>
+        if (!checkAuth()) {}
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js').catch(err => console.error('Error SW:', err));
+    </script>
+</body>
+</html>

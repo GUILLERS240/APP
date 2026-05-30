@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Gestores - TotalBiz 2.0</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#0f0f1a">
+</head>
+<body>
+    <nav class="top-navbar">
+        <div class="nav-brand">
+            <img src="../images/icons/logo.png" alt="Logo" onerror="this.style.display='none'">
+            <h1>TotalBiz 2.0</h1>
+        </div>
+        <div class="nav-menu" id="topNavMenu"></div>
+        <div class="nav-actions">
+            <button id="logoutTopBtn" class="logout-btn-nav">🔓 Cerrar Sesión</button>
+        </div>
+    </nav>
+
+    <nav class="bottom-navbar" id="bottomNavMenu"></nav>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="logo-area">
+                    <h1>👥 Gestores de Venta</h1>
+                    <p>Gestionar vendedores y comisiones</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-primary" onclick="showSellerModal()">+ Nuevo Gestor</button>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="stats-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                <div class="stat-card-dashboard"><div class="stat-info"><h3>Total Gestores</h3><div class="stat-number" id="totalSellers">0</div></div><div class="stat-icon">👥</div></div>
+                <div class="stat-card-dashboard"><div class="stat-info"><h3>Comisiones Pendientes</h3><div class="stat-number" id="totalPending">0 CUP</div></div><div class="stat-icon">💰</div></div>
+                <div class="stat-card-dashboard"><div class="stat-info"><h3>Comisiones Pagadas</h3><div class="stat-number" id="totalPaid">0 CUP</div></div><div class="stat-icon">✅</div></div>
+            </div>
+
+            <div id="sellersGrid" class="sellers-grid">
+                <div class="empty-state"><p>Cargando gestores...</p></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="sellerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nuevo Gestor de Venta</h2>
+                <span class="close-modal" onclick="closeSellerModal()">&times;</span>
+            </div>
+            <form id="sellerForm">
+                <input type="hidden" id="sellerId">
+                <div class="form-group"><label>Nombre *</label><input type="text" id="sellerName" required placeholder="Ej: Guillermo"></div>
+                <div class="form-group"><label>Apellidos *</label><input type="text" id="sellerLastname" required placeholder="Ej: Ramos Santos"></div>
+                <div class="form-group"><label>Número de Móvil *</label><input type="text" id="sellerPhone" required placeholder="Ej: 46329057"></div>
+                <div class="form-group"><label>Número de Tarjeta (Opcional)</label><input type="text" id="sellerCard" placeholder="Número de tarjeta bancaria"></div>
+                <div class="form-group"><label>Código de Venta</label><input type="text" id="sellerCode" readonly style="background: #1e1e2f; font-weight: bold;"></div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Guardar Gestor</button>
+                    <button type="button" onclick="closeSellerModal()" class="btn-danger">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/sellers.js"></script>
+    <script src="../js/backup.js"></script>
+    <script src="../js/icons.js"></script>
+    <script src="../js/support.js"></script>
+    <script>
+        if (!checkAuth()) {}
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js').catch(err => console.error('Error SW:', err));
+    </script>
+</body>
+</html>

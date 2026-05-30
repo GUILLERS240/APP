@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Tipo de Cambio - TotalBiz 2.0</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#0f0f1a">
+    <style>
+        .currency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .currency-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition-bounce);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .currency-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .currency-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .currency-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .currency-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .currency-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .currency-code {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .currency-rate {
+            margin: 16px 0;
+        }
+        
+        .rate-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .rate-input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .rate-input-group input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .rate-input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        .update-rate-btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .update-rate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .currency-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(99, 102, 241, 0.15);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            color: var(--primary-light);
+        }
+        
+        .add-currency-btn {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .add-currency-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        .currency-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .converter-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .converter-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .converter-box {
+            background: var(--bg-input);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .converter-box input {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .converter-box select {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            margin-top: 10px;
+        }
+        
+        .converter-result {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary-light);
+        }
+        
+        .swap-icon {
+            font-size: 32px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-card);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-color);
+        }
+        
+        .swap-icon:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+        
+        .modal-small {
+            max-width: 450px;
+        }
+        
+        .form-icon-selector {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .icon-option {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .icon-option:hover, .icon-option.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .currency-action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: transparent;
+            border: none;
+            font-size: 16px;
+        }
+        
+        .currency-action-btn.delete-btn {
+            color: var(--danger);
+        }
+        
+        .currency-action-btn.delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .history-table-container {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .converter-row {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .swap-icon {
+                transform: rotate(90deg);
+                margin: 0 auto;
+            }
+            
+            .swap-icon:hover {
+                transform: rotate(90deg) scale(1.1);
+            }
+            
+            .currency-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .currency-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .add-currency-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-navbar">
+        <div class="nav-brand">
+            <img src="../images/icons/logo.png" alt="Logo" onerror="this.style.display='none'">
+            <h1>TotalBiz 2.0</h1>
+        </div>
+        <div class="nav-menu" id="topNavMenu"></div>
+        <div class="nav-actions">
+            <button id="logoutTopBtn" class="logout-btn-nav">🔓 Cerrar Sesión</button>
+        </div>
+    </nav>
+
+    <nav class="bottom-navbar" id="bottomNavMenu"></nav>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="logo-area">
+                    <h1>💱 Tipo de Cambio</h1>
+                    <p>Configurar tasas de cambio para diferentes monedas</p>
+                </div>
+            </div>
+            <div class="header-actions"></div>
+        </header>
+
+        <div class="content-area">
+            <!-- Cabecera con botón para añadir moneda -->
+            <div class="currency-header">
+                <h2>📊 Monedas disponibles</h2>
+                <button class="add-currency-btn" onclick="showAddCurrencyModal()">
+                    <span>➕</span> Añadir nueva moneda
+                </button>
+            </div>
+
+            <!-- Tarjetas de monedas -->
+            <div class="currency-grid" id="currencyGrid">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <!-- Tarjeta de información importante -->
+            <div class="payment-card" style="margin-bottom: 30px;">
+                <h2>📌 Información Importante</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 24px;">✅</span>
+                        <span>La tasa se aplica automáticamente a las ventas en CUP</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 24px;">✅</span>
+                        <span>Las ventas en CUP Efectivo y Transferencia usan USD → CUP</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 24px;">✅</span>
+                        <span>La comisión de los gestores se calcula con USD → CUP</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversor rápido mejorado -->
+            <div class="payment-card converter-card" style="margin-bottom: 30px;">
+                <h2>🔄 Conversor Rápido de Monedas</h2>
+                <div class="converter-row">
+                    <div class="converter-box">
+                        <span style="font-size: 24px;">💵</span>
+                        <h4>Desde</h4>
+                        <input type="number" id="fromAmount" placeholder="0.00" value="1">
+                        <select id="fromCurrency"></select>
+                    </div>
+                    
+                    <div class="swap-icon" onclick="swapCurrencies()" title="Intercambiar monedas">
+                        ↔️
+                    </div>
+                    
+                    <div class="converter-box">
+                        <span style="font-size: 24px;">🎯</span>
+                        <h4>Hacia</h4>
+                        <input type="number" id="toAmount" placeholder="0.00" readonly>
+                        <select id="toCurrency"></select>
+                    </div>
+                </div>
+                <div class="converter-result" id="converterResult">
+                    💱 Conversión en tiempo real
+                </div>
+            </div>
+
+            <!-- Historial de cambios -->
+            <div class="payment-card">
+                <h2>📜 Historial de Cambios</h2>
+                <div class="history-table-container">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(99,102,241,0.1);">
+                                <th style="padding: 12px; text-align: left;">Fecha</th>
+                                <th style="padding: 12px; text-align: left;">Moneda</th>
+                                <th style="padding: 12px; text-align: left;">Tipo de Cambio</th>
+                                <th style="padding: 12px; text-align: left;">Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rateHistory">
+                            <tr><td colspan="4" style="text-align: center; padding: 40px;">Cargando historial...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para añadir nueva moneda -->
+    <div id="addCurrencyModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>➕ Nueva Moneda</h2>
+                <span class="close-modal" onclick="closeAddCurrencyModal()">&times;</span>
+            </div>
+            <form id="addCurrencyForm">
+                <div class="form-group">
+                    <label>Nombre de la moneda *</label>
+                    <input type="text" id="newCurrencyName" required placeholder="Ej: Sol Peruano, Peso Mexicano, etc.">
+                </div>
+                <div class="form-group">
+                    <label>Código (3 letras) *</label>
+                    <input type="text" id="newCurrencyCode" required placeholder="Ej: PEN, MXN, COP, ARS" maxlength="3" style="text-transform: uppercase;">
+                    <small>Código internacional de 3 letras (ej: PEN para Sol Peruano)</small>
+                </div>
+                <div class="form-group">
+                    <label>Icono / Emoji</label>
+                    <input type="text" id="newCurrencyIcon" placeholder="Ej: 💵, 💶, 💷, ₿" maxlength="2">
+                    <div class="form-icon-selector">
+                        <div class="icon-option" onclick="selectCurrencyIcon('💵')">💵</div>
+                        <div class="icon-option" onclick="selectCurrencyIcon('💶')">💶</div>
+                        <div class="icon-option" onclick="selectCurrencyIcon('💷')">💷</div>
+                        <div class="icon-option" onclick="selectCurrencyIcon('💰')">💰</div>
+                        <div class="icon-option" onclick="selectCurrencyIcon('🪙')">🪙</div>
+                        <div class="icon-option" onclick="selectCurrencyIcon('💱')">💱</div>
+                        <div class="icon-option" onclick="selectCurrencyIcon('💳')">💳</div>
+                        <div class="icon-option" onclick="selectCurrencyIcon('🏦')">🏦</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tasa de cambio (1 moneda → CUP) *</label>
+                    <input type="number" id="newCurrencyRate" step="0.01" min="0.01" required placeholder="Ej: 85.50">
+                    <small>Ejemplo: 1 PEN = 85.50 CUP</small>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">✅ Agregar moneda</button>
+                    <button type="button" onclick="closeAddCurrencyModal()" class="btn-danger">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/backup.js"></script>
+    <script src="../js/icons.js"></script>
+    <script src="../js/support.js"></script>
+    
+    <script>
+        // Configuración base de monedas
+        const DEFAULT_CURRENCIES = {
+            USD: { name: 'Dólar Americano', icon: '💵', code: 'USD', rateToCUP: 320, isDefault: true },
+            EUR: { name: 'Euro', icon: '💶', code: 'EUR', rateToCUP: 345, isDefault: true },
+            MLC: { name: 'MLC', icon: '💳', code: 'MLC', rateToCUP: 320, isDefault: true },
+            CUP: { name: 'Peso Cubano', icon: '💴', code: 'CUP', rateToCUP: 1, isDefault: true }
+        };
+        
+        let customCurrencies = {};
+        let currentRates = {};
+        let selectedCurrencyIcon = '💵';
+        
+        // Cargar monedas guardadas
+        async function loadCurrencies() {
+            try {
+                // Cargar monedas personalizadas desde la base de datos
+                const savedCurrencies = await getData('custom_currencies');
+                if (savedCurrencies && savedCurrencies.length > 0) {
+                    const latest = savedCurrencies.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0];
+                    customCurrencies = latest.currencies || {};
+                }
+                
+                // Cargar tasas de cambio
+                const rates = await getData(STORES.EXCHANGE_RATES);
+                
+                // Inicializar tasas actuales
+                for (const [code, currency] of Object.entries(DEFAULT_CURRENCIES)) {
+                    currentRates[code] = currency.rateToCUP;
+                }
+                
+                // Cargar tasas guardadas
+                if (rates && rates.length > 0) {
+                    const latestRates = {};
+                    for (const rate of rates) {
+                        if (rate.currency && !latestRates[rate.currency]) {
+                            latestRates[rate.currency] = rate;
+                        } else if (rate.currency && latestRates[rate.currency] && new Date(rate.date) > new Date(latestRates[rate.currency].date)) {
+                            latestRates[rate.currency] = rate;
+                        }
+                    }
+                    
+                    for (const [code, rateData] of Object.entries(latestRates)) {
+                        if (currentRates[code] !== undefined) {
+                            currentRates[code] = rateData.rate;
+                        }
+                    }
+                }
+                
+                // Cargar tasas de monedas personalizadas
+                for (const [code, currency] of Object.entries(customCurrencies)) {
+                    if (!currentRates[code]) {
+                        currentRates[code] = currency.rateToCUP;
+                    }
+                }
+                
+                renderCurrencyCards();
+                updateConverterSelects();
+                loadRateHistory();
+                
+            } catch (error) {
+                console.error('Error loading currencies:', error);
+                renderCurrencyCards();
+            }
+        }
+        
+        // Renderizar tarjetas de monedas
+        function renderCurrencyCards() {
+            const grid = document.getElementById('currencyGrid');
+            if (!grid) return;
+            
+            let html = '';
+            
+            // Monedas por defecto
+            for (const [code, currency] of Object.entries(DEFAULT_CURRENCIES)) {
+                const rate = currentRates[code] || currency.rateToCUP;
+                const isBase = code === 'USD';
+                
+                html += `
+                    <div class="currency-card">
+                        ${isBase ? '<div class="currency-badge">📌 Moneda base (USD → CUP)</div>' : '<div class="currency-badge">📌 Por defecto</div>'}
+                        <div class="currency-card-header">
+                            <div class="currency-info">
+                                <div class="currency-icon">${currency.icon}</div>
+                                <div>
+                                    <div class="currency-name">${currency.name}</div>
+                                    <div class="currency-code">${currency.code}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="currency-rate">
+                            <label class="rate-label">Tasa de cambio (1 ${code} → CUP)</label>
+                            <div class="rate-input-group">
+                                <input type="number" id="rate_${code}" value="${rate.toFixed(2)}" step="0.01" min="0.01" onchange="updateRate('${code}', this.value)">
+                                <span>CUP</span>
+                            </div>
+                        </div>
+                        <button class="update-rate-btn" onclick="updateRateAndSave('${code}')">💾 Actualizar ${code}</button>
+                    </div>
+                `;
+            }
+            
+            // Monedas personalizadas
+            for (const [code, currency] of Object.entries(customCurrencies)) {
+                const rate = currentRates[code] || currency.rateToCUP;
+                
+                html += `
+                    <div class="currency-card">
+                        <div class="currency-badge">✨ Personalizada</div>
+                        <div class="currency-card-header">
+                            <div class="currency-info">
+                                <div class="currency-icon">${currency.icon || '💱'}</div>
+                                <div>
+                                    <div class="currency-name">${currency.name}</div>
+                                    <div class="currency-code">${currency.code}</div>
+                                </div>
+                            </div>
+                            <button class="currency-action-btn delete-btn" onclick="deleteCurrency('${code}')" title="Eliminar moneda">
+                                🗑️
+                            </button>
+                        </div>
+                        <div class="currency-rate">
+                            <label class="rate-label">Tasa de cambio (1 ${code} → CUP)</label>
+                            <div class="rate-input-group">
+                                <input type="number" id="rate_${code}" value="${rate.toFixed(2)}" step="0.01" min="0.01" onchange="updateRate('${code}', this.value)">
+                                <span>CUP</span>
+                            </div>
+                        </div>
+                        <button class="update-rate-btn" onclick="updateRateAndSave('${code}')">💾 Actualizar ${code}</button>
+                    </div>
+                `;
+            }
+            
+            grid.innerHTML = html;
+        }
+        
+        // Actualizar selects del conversor
+        function updateConverterSelects() {
+            const fromSelect = document.getElementById('fromCurrency');
+            const toSelect = document.getElementById('toCurrency');
+            
+            if (!fromSelect || !toSelect) return;
+            
+            let options = '';
+            
+            // Monedas por defecto
+            for (const [code, currency] of Object.entries(DEFAULT_CURRENCIES)) {
+                options += `<option value="${code}">${currency.icon} ${currency.name} (${code})</option>`;
+            }
+            
+            // Monedas personalizadas
+            for (const [code, currency] of Object.entries(customCurrencies)) {
+                options += `<option value="${code}">${currency.icon || '💱'} ${currency.name} (${code})</option>`;
+            }
+            
+            const oldFrom = fromSelect.value;
+            const oldTo = toSelect.value;
+            
+            fromSelect.innerHTML = options;
+            toSelect.innerHTML = options;
+            
+            if (oldFrom && document.querySelector(`option[value="${oldFrom}"]`)) fromSelect.value = oldFrom;
+            if (oldTo && document.querySelector(`option[value="${oldTo}"]`)) toSelect.value = oldTo;
+            
+            updateConverter();
+        }
+        
+        // Actualizar tasa en memoria
+        function updateRate(currency, value) {
+            const newRate = parseFloat(value);
+            if (!isNaN(newRate) && newRate > 0) {
+                currentRates[currency] = newRate;
+                updateConverter();
+            }
+        }
+        
+        // Guardar tasa en base de datos
+        async function updateRateAndSave(currency) {
+            const input = document.getElementById(`rate_${currency}`);
+            const newRate = parseFloat(input.value);
+            
+            if (isNaN(newRate) || newRate <= 0) {
+                alert('❌ Ingrese una tasa de cambio válida (mayor a 0)');
+                return;
+            }
+            
+            const currencyName = DEFAULT_CURRENCIES[currency]?.name || customCurrencies[currency]?.name || currency;
+            
+            const confirmChange = confirm(`¿Actualizar tasa de cambio?\n\n1 ${currency} = ${newRate} CUP\n\nMoneda: ${currencyName}\n\nEste cambio afectará las conversiones.`);
+            
+            if (!confirmChange) return;
+            
+            try {
+                await saveData(STORES.EXCHANGE_RATES, {
+                    currency: currency,
+                    rate: newRate,
+                    date: new Date().toISOString(),
+                    description: `Actualización de tasa ${currency} → CUP`
+                });
+                
+                currentRates[currency] = newRate;
+                alert(`✅ Tasa de ${currency} actualizada a ${newRate} CUP`);
+                loadRateHistory();
+                updateConverter();
+                
+            } catch (error) {
+                alert('❌ Error al guardar: ' + error.message);
+            }
+        }
+        
+        // Añadir nueva moneda
+        async function addNewCurrency(name, code, icon, rate) {
+            code = code.toUpperCase();
+            
+            // Verificar si ya existe
+            if (DEFAULT_CURRENCIES[code] || customCurrencies[code]) {
+                throw new Error('Ya existe una moneda con ese código');
+            }
+            
+            // Crear nueva moneda
+            customCurrencies[code] = {
+                name: name,
+                code: code,
+                icon: icon || '💱',
+                rateToCUP: rate,
+                isDefault: false,
+                createdAt: new Date().toISOString()
+            };
+            
+            currentRates[code] = rate;
+            
+            // Guardar en base de datos
+            await saveData('custom_currencies', {
+                currencies: customCurrencies,
+                updatedAt: new Date().toISOString()
+            });
+            
+            // Guardar tasa inicial
+            await saveData(STORES.EXCHANGE_RATES, {
+                currency: code,
+                rate: rate,
+                date: new Date().toISOString(),
+                description: `Moneda ${name} (${code}) agregada con tasa ${rate} CUP`
+            });
+            
+            renderCurrencyCards();
+            updateConverterSelects();
+            loadRateHistory();
+        }
+        
+        // Eliminar moneda personalizada
+        async function deleteCurrency(code) {
+            if (DEFAULT_CURRENCIES[code]) {
+                alert('❌ No se puede eliminar una moneda por defecto');
+                return;
+            }
+            
+            const confirmDelete = confirm(`⚠️ ¿Eliminar la moneda "${customCurrencies[code]?.name || code}"?\n\nSe eliminarán todas las tasas asociadas.`);
+            if (!confirmDelete) return;
+            
+            delete customCurrencies[code];
+            delete currentRates[code];
+            
+            // Guardar cambios
+            await saveData('custom_currencies', {
+                currencies: customCurrencies,
+                updatedAt: new Date().toISOString()
+            });
+            
+            renderCurrencyCards();
+            updateConverterSelects();
+            loadRateHistory();
+            alert(`✅ Moneda eliminada`);
+        }
+        
+        // Cargar historial de cambios
+        async function loadRateHistory() {
+            try {
+                const rates = await getData(STORES.EXCHANGE_RATES);
+                const tbody = document.getElementById('rateHistory');
+                
+                if (!rates || rates.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px;">No hay historial disponible</td></tr>';
+                    return;
+                }
+                
+                const sortedRates = rates.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                tbody.innerHTML = sortedRates.map(rate => {
+                    const date = new Date(rate.date);
+                    const dateFormatted = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                    
+                    let currencyInfo = DEFAULT_CURRENCIES[rate.currency];
+                    if (!currencyInfo && customCurrencies[rate.currency]) {
+                        currencyInfo = customCurrencies[rate.currency];
+                    } else if (!currencyInfo) {
+                        currencyInfo = { name: rate.currency, icon: '💱' };
+                    }
+                    
+                    return `
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 12px;">${dateFormatted}</td>
+                            <td style="padding: 12px;">
+                                <span style="display: flex; align-items: center; gap: 8px;">
+                                    ${currencyInfo.icon} ${currencyInfo.name} (${rate.currency})
+                                </span>
+                            </td>
+                            <td style="padding: 12px;"><strong>${rate.rate.toFixed(2)} CUP</strong></td>
+                            <td style="padding: 12px; color: var(--text-muted);">${rate.description || 'Actualización de tasa'}</td>
+                        </tr>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Error loading rate history:', error);
+            }
+        }
+        
+        // Actualizar conversor
+        function updateConverter() {
+            const fromAmount = parseFloat(document.getElementById('fromAmount').value) || 0;
+            const fromCurrency = document.getElementById('fromCurrency').value;
+            const toCurrency = document.getElementById('toCurrency').value;
+            
+            let result = 0;
+            
+            if (fromCurrency === toCurrency) {
+                result = fromAmount;
+            } else {
+                // Convertir a CUP primero
+                let amountInCUP = fromAmount;
+                if (fromCurrency !== 'CUP') {
+                    amountInCUP = fromAmount * currentRates[fromCurrency];
+                }
+                
+                // Convertir de CUP a destino
+                result = amountInCUP;
+                if (toCurrency !== 'CUP') {
+                    result = amountInCUP / currentRates[toCurrency];
+                }
+            }
+            
+            document.getElementById('toAmount').value = result.toFixed(4);
+            
+            const resultDiv = document.getElementById('converterResult');
+            if (resultDiv) {
+                const fromRate = fromCurrency === 'CUP' ? 1 : currentRates[fromCurrency];
+                const toRate = toCurrency === 'CUP' ? 1 : currentRates[toCurrency];
+                resultDiv.innerHTML = `💱 ${fromAmount} ${fromCurrency} = ${result.toFixed(4)} ${toCurrency} | Tasa: 1 ${fromCurrency} = ${fromRate.toFixed(2)} CUP | 1 ${toCurrency} = ${toRate.toFixed(2)} CUP`;
+            }
+        }
+        
+        // Intercambiar monedas
+        function swapCurrencies() {
+            const fromSelect = document.getElementById('fromCurrency');
+            const toSelect = document.getElementById('toCurrency');
+            const fromAmount = document.getElementById('fromAmount');
+            const toAmount = document.getElementById('toAmount');
+            
+            const tempCurrency = fromSelect.value;
+            fromSelect.value = toSelect.value;
+            toSelect.value = tempCurrency;
+            
+            const tempAmount = fromAmount.value;
+            fromAmount.value = toAmount.value;
+            toAmount.value = tempAmount;
+            
+            updateConverter();
+        }
+        
+        // Modal funciones
+        function selectCurrencyIcon(icon) {
+            selectedCurrencyIcon = icon;
+            document.getElementById('newCurrencyIcon').value = icon;
+            document.querySelectorAll('.icon-option').forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.textContent === icon) opt.classList.add('selected');
+            });
+        }
+        
+        function showAddCurrencyModal() {
+            document.getElementById('addCurrencyModal').classList.add('show');
+            document.getElementById('newCurrencyName').value = '';
+            document.getElementById('newCurrencyCode').value = '';
+            document.getElementById('newCurrencyIcon').value = '💵';
+            document.getElementById('newCurrencyRate').value = '';
+            selectedCurrencyIcon = '💵';
+            document.querySelectorAll('.icon-option').forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.textContent === '💵') opt.classList.add('selected');
+            });
+        }
+        
+        function closeAddCurrencyModal() {
+            document.getElementById('addCurrencyModal').classList.remove('show');
+        }
+        
+        // Formulario nueva moneda
+        document.getElementById('addCurrencyForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('newCurrencyName').value.trim();
+            let code = document.getElementById('newCurrencyCode').value.trim().toUpperCase();
+            const icon = document.getElementById('newCurrencyIcon').value || '💱';
+            const rate = parseFloat(document.getElementById('newCurrencyRate').value);
+            
+            if (!name) {
+                alert('❌ Ingrese el nombre de la moneda');
+                return;
+            }
+            
+            if (!code || code.length !== 3) {
+                alert('❌ Ingrese un código válido de 3 letras (ej: PEN, MXN, COP)');
+                return;
+            }
+            
+            if (isNaN(rate) || rate <= 0) {
+                alert('❌ Ingrese una tasa de cambio válida (mayor a 0)');
+                return;
+            }
+            
+            try {
+                await addNewCurrency(name, code, icon, rate);
+                alert(`✅ Moneda "${name} (${code})" agregada con tasa ${rate} CUP`);
+                closeAddCurrencyModal();
+            } catch (error) {
+                alert('❌ ' + error.message);
+            }
+        });
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadCurrencies();
+            
+            const fromAmount = document.getElementById('fromAmount');
+            const fromCurrency = document.getElementById('fromCurrency');
+            const toCurrency = document.getElementById('toCurrency');
+            
+            if (fromAmount) fromAmount.addEventListener('input', updateConverter);
+            if (fromCurrency) fromCurrency.addEventListener('change', updateConverter);
+            if (toCurrency) toCurrency.addEventListener('change', updateConverter);
+        });
+        
+        if (!checkAuth()) {}
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js').catch(err => console.error('Error SW:', err));
+    </script>
+</body>
+</html>
